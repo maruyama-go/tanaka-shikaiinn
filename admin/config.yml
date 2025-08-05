@@ -1,0 +1,114 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "static/images/uploads"
+public_folder: "/images/uploads"
+
+collections:
+  - name: "blog"
+    label: "ブログ記事"
+    folder: "_posts"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - {label: "タイトル", name: "title", widget: "string"}
+      - {label: "公開日", name: "date", widget: "datetime"}
+      - {label: "概要", name: "excerpt", widget: "text"}
+      - {label: "アイキャッチ画像", name: "featured_image", widget: "image", required: false}
+      - {label: "カテゴリー", name: "category", widget: "select", options: ["お知らせ", "診療情報", "健康情報", "医院情報"]}
+      - {label: "本文", name: "body", widget: "markdown"}
+      - {label: "公開", name: "published", widget: "boolean", default: true}
+
+  - name: "pages"
+    label: "固定ページ"
+    files:
+      - label: "医院について"
+        name: "about"
+        file: "_data/about.yml"
+        fields:
+          - {label: "タイトル", name: "title", widget: "string"}
+          - {label: "サブタイトル", name: "subtitle", widget: "string"}
+          - {label: "メイン画像", name: "main_image", widget: "image", required: false}
+          - {label: "院長挨拶", name: "director_message", widget: "markdown"}
+          - {label: "医院理念", name: "philosophy", widget: "markdown"}
+          - {label: "医院の特徴", name: "features", widget: "list", fields: [
+              {label: "特徴名", name: "name", widget: "string"},
+              {label: "説明", name: "description", widget: "text"}
+            ]}
+
+      - label: "診療案内"
+        name: "services"
+        file: "_data/services.yml"
+        fields:
+          - {label: "診療科目", name: "services", widget: "list", fields: [
+              {label: "診療名", name: "name", widget: "string"},
+              {label: "アイコン", name: "icon", widget: "string"},
+              {label: "説明", name: "description", widget: "text"},
+              {label: "詳細", name: "details", widget: "markdown", required: false},
+              {label: "料金", name: "price", widget: "text", required: false},
+              {label: "画像", name: "image", widget: "image", required: false}
+            ]}
+
+      - label: "医院情報"
+        name: "clinic_info"
+        file: "_data/clinic.yml"
+        fields:
+          - {label: "医院名", name: "name", widget: "string"}
+          - {label: "院長名", name: "director", widget: "string"}
+          - {label: "住所", name: "address", widget: "text"}
+          - {label: "電話番号", name: "phone", widget: "string"}
+          - {label: "メールアドレス", name: "email", widget: "string"}
+          - {label: "診療時間", name: "hours", widget: "list", fields: [
+              {label: "曜日", name: "day", widget: "string"},
+              {label: "時間", name: "time", widget: "string"}
+            ]}
+          - {label: "休診日", name: "closed_days", widget: "string"}
+          - {label: "アクセス情報", name: "access", widget: "text"}
+
+  - name: "settings"
+    label: "サイト設定"
+    files:
+      - label: "基本設定"
+        name: "general"
+        file: "_data/settings.yml"
+        fields:
+          - {label: "サイトタイトル", name: "site_title", widget: "string"}
+          - {label: "サイト説明", name: "site_description", widget: "text"}
+          - {label: "メタキーワード", name: "meta_keywords", widget: "string"}
+          - {label: "ファビコン", name: "favicon", widget: "image", required: false}
+          - {label: "ロゴ画像", name: "logo", widget: "image", required: false}
+          - {label: "SNSリンク", name: "social_links", widget: "object", fields: [
+              {label: "Facebook", name: "facebook", widget: "string", required: false},
+              {label: "Twitter", name: "twitter", widget: "string", required: false},
+              {label: "Instagram", name: "instagram", widget: "string", required: false},
+              {label: "LINE", name: "line", widget: "string", required: false}
+            ]}
+
+      - label: "トップページ設定"
+        name: "homepage"
+        file: "_data/homepage.yml"
+        fields:
+          - {label: "ヒーローセクション", name: "hero", widget: "object", fields: [
+              {label: "メインタイトル", name: "title", widget: "string"},
+              {label: "サブタイトル", name: "subtitle", widget: "string"},
+              {label: "背景画像", name: "background_image", widget: "image", required: false},
+              {label: "CTAボタンテキスト", name: "cta_text", widget: "string"}
+            ]}
+          - {label: "お知らせ表示数", name: "news_count", widget: "number", default: 3}
+          - {label: "特集記事", name: "featured_posts", widget: "list", fields: [
+              {label: "記事タイトル", name: "title", widget: "string"},
+              {label: "記事リンク", name: "link", widget: "string"},
+              {label: "画像", name: "image", widget: "image", required: false}
+            ]}
+
+# サイト表示設定
+display_url: https://tanaka-dental.netlify.app
+logo_url: https://tanaka-dental.netlify.app/images/logo.png
+
+# エディター設定
+editor:
+  preview: true
+
+# i18n設定
+locale: 'ja'
