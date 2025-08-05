@@ -1,0 +1,252 @@
+html<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>田中歯科医院 - 管理画面</title>
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+</head>
+<body>
+  <!-- Netlify CMS Script -->
+  <script src="https://unpkg.com/netlify-cms@^2.0.0/dist/netlify-cms.js"></script>
+
+  <!-- カスタムプレビューテンプレート -->
+  <script>
+    // ブログ記事プレビューテンプレート
+    const BlogPostPreview = createClass({
+      render() {
+        const entry = this.props.entry;
+        const title = entry.getIn(['data', 'title']);
+        const date = entry.getIn(['data', 'date']);
+        const excerpt = entry.getIn(['data', 'excerpt']);
+        const body = entry.getIn(['data', 'body']);
+        const category = entry.getIn(['data', 'category']);
+
+        return h('div', { className: 'blog-preview' },
+          h('div', { className: 'blog-preview-header' },
+            h('h1', { className: 'blog-title' }, title),
+            h('div', { className: 'blog-meta' },
+              h('span', { className: 'blog-date' }, date && date.toLocaleDateString('ja-JP')),
+              h('span', { className: 'blog-category' }, category)
+            )
+          ),
+          h('div', { className: 'blog-excerpt' }, excerpt),
+          h('div', { className: 'blog-content' }, this.props.widgetFor('body'))
+        );
+      }
+    });
+
+    // プレビューテンプレートを登録
+    CMS.registerPreviewTemplate('blog', BlogPostPreview);
+
+    // カスタムエディターコンポーネント
+    CMS.registerEditorComponent({
+      id: 'youtube',
+      label: 'YouTube',
+      fields: [
+        {
+          name: 'url',
+          label: 'YouTube URL',
+          widget: 'string'
+        },
+        {
+          name: 'title',
+          label: 'タイトル（オプション）',
+          widget: 'string',
+          required: false
+        }
+      ],
+      pattern: /^<div class="youtube-embed".*?<\/div>$/,
+      fromBlock: function(match) {
+        const urlMatch = match.match(/src="https:\/\/www\.youtube\.com\/embed\/([^"]+)"/);
+        return {
+          url: urlMatch ? `https://www.youtube.com/watch?v=${urlMatch[1]}` : '',
+          title: ''
+        };
+      },
+      toBlock: function(obj) {
+        const videoId = obj.url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/);
+        if (videoId) {
+          return `<div class="youtube-embed">
+  <iframe src="https://www.youtube.com/embed/${videoId[1]}" frameborder="0" allowfullscreen></iframe>
+  ${obj.title ? `<p class="video-title">${obj.title}</p>` : ''}
+</div>`;
+        }
+        return '';
+      },
+      toPreview: function(obj) {
+        const videoId = obj.url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/);
+        if (videoId) {
+          return `<div class="youtube-embed">
+  <iframe src="https://www.youtube.com/embed/${videoId[1]}" frameborder="0" allowfullscreen></iframe>
+  ${obj.title ? `<p class="video-title">${obj.title}</p>` : ''}
+</div>`;
+        }
+        return '';
+      }
+    });
+
+    // カスタムスタイル
+    CMS.registerPreviewStyle(`
+      .blog-preview {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        font-family: 'Noto Sans JP', sans-serif;
+        line-height: 1.7;
+        color: #333;
+      }
+      
+      .blog-preview-header {
+        border-bottom: 2px solid #2c5aa0;
+        padding-bottom: 20px;
+        margin-bottom: 20px;
+      }
+      
+      .blog-title {
+        color: #2c5aa0;
+        font-size: 2rem;
+        margin-bottom: 10px;
+        font-weight: 600;
+      }
+      
+      .blog-meta {
+        display: flex;
+        gap: 20px;
+        font-size: 0.9rem;
+        color: #666;
+      }
+      
+      .blog-category {
+        background: #2c5aa0;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 15px;
+        font-size: 0.8rem;
+      }
+      
+      .blog-excerpt {
+        background: #f8f9fa;
+        padding: 15px;
+        border-left: 4px solid #2c5aa0;
+        margin-bottom: 20px;
+        font-style: italic;
+      }
+      
+      .blog-content {
+        font-size: 1.1rem;
+      }
+      
+      .blog-content h2 {
+        color: #2c5aa0;
+        margin-top: 30px;
+        margin-bottom: 15px;
+        font-size: 1.5rem;
+      }
+      
+      .blog-content h3 {
+        color: #2c5aa0;
+        margin-top: 25px;
+        margin-bottom: 10px;
+        font-size: 1.3rem;
+      }
+      
+      .blog-content p {
+        margin-bottom: 15px;
+      }
+      
+      .blog-content ul, .blog-content ol {
+        margin-bottom: 15px;
+        padding-left: 20px;
+      }
+      
+      .blog-content li {
+        margin-bottom: 5px;
+      }
+      
+      .blog-content blockquote {
+        border-left: 4px solid #2c5aa0;
+        padding-left: 20px;
+        margin: 20px 0;
+        font-style: italic;
+        color: #666;
+      }
+      
+      .blog-content img {
+        max-width: 100%;
+        height: auto;
+        margin: 15px 0;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      }
+      
+      .youtube-embed {
+        margin: 20px 0;
+        text-align: center;
+      }
+      
+      .youtube-embed iframe {
+        width: 100%;
+        max-width: 560px;
+        height: 315px;
+        border-radius: 8px;
+      }
+      
+      .video-title {
+        margin-top: 10px;
+        font-weight: 600;
+        color: #2c5aa0;
+      }
+    `);
+
+    // Netlify Identity初期化
+    if (window.netlifyIdentity) {
+      window.netlifyIdentity.on("init", user => {
+        if (!user) {
+          window.netlifyIdentity.on("login", () => {
+            document.location.href = "/admin/";
+          });
+        }
+      });
+    }
+  </script>
+
+  <style>
+    /* 管理画面のカスタムスタイル */
+    body {
+      font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    }
+    
+    /* CMS UIのカスタマイズ */
+    [data-slate-editor] {
+      font-family: 'Noto Sans JP', sans-serif !important;
+      line-height: 1.7 !important;
+    }
+    
+    /* プレビューエリアのスタイル調整 */
+    .nc-previewPane-frame {
+      background: white;
+    }
+    
+    /* サイドバーのカスタマイズ */
+    .nc-app-sidebar {
+      background: linear-gradient(135deg, #2c5aa0, #4682b4) !important;
+    }
+    
+    .nc-app-sidebar a {
+      color: white !important;
+    }
+    
+    /* ボタンのカスタマイズ */
+    button[color="primary"] {
+      background-color: #2c5aa0 !important;
+      border-color: #2c5aa0 !important;
+    }
+    
+    button[color="primary"]:hover {
+      background-color: #1e3f73 !important;
+      border-color: #1e3f73 !important;
+    }
+  </style>
+</body>
+</html>
