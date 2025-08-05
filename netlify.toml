@@ -1,0 +1,58 @@
+toml[build]
+  publish = "/"
+  command = "echo 'Static site, no build required'"
+
+[build.environment]
+  NODE_VERSION = "18"
+
+# フォームの設定
+[[forms]]
+  name = "contact"
+
+# リダイレクト設定
+[[redirects]]
+  from = "/admin"
+  to = "/admin/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
+# ヘッダー設定
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[headers]]
+  for = "/admin/*"
+  [headers.values]
+    X-Robots-Tag = "noindex"
+
+[[headers]]
+  for = "*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "*.woff2"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Git Gateway設定
+[context.production.environment]
+  HUGO_VERSION = "0.88.1"
+
+# Netlify Identity設定
+[template.environment]
+  NETLIFY_SITE_ID = ""
